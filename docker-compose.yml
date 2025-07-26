@@ -1,0 +1,94 @@
+version: "3.8"
+
+services:
+  # Main application service
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: production
+    container_name: k8s-learning-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - LOG_LEVEL=info
+    volumes:
+      # Mount logs directory for log persistence
+      - ./logs:/app/logs
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const http = require('http'); http.get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+
+  # Development service with hot reload
+  app-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+      target: development
+    container_name: k8s-learning-app-dev
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - LOG_LEVEL=debug
+    volumes:
+      # Mount source code for development
+      - ./app:/app
+      - /app/node_modules
+      - ./logs:/app/logs
+    networks:
+      - app-network
+    profiles:
+      - dev
+    command: npm run dev
+
+  # Monitoring service (for Phase 4 preparation)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: k8s-learning-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - app-network
+    profiles:
+      - monitoring
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+
+networks:
+  app-network:
+    driver: bridge
+    name: k8s-learning-network
+
+volumes:
+  prometheus-data:
+    driver: local
