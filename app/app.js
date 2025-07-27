@@ -197,10 +197,24 @@ app.use("*", (req, res) => {
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
+let server;
+
+// Only start the server if this file is run directly, not when imported (fixes test open handle issue)
+if (require.main === module) {
+  // Start server
+  server = app.listen(port, () => {
+    logger.info("Server started", {
+      port,
+      environment: process.env.NODE_ENV || "development",
+      nodeVersion: process.version,
+    });
+  });
+}
+
 // Graceful shutdown handling
 const gracefulShutdown = (signal) => {
   logger.info(`Received ${signal}, shutting down gracefully`);
-  server.close(() => {
+  server?.close(() => {
     logger.info("Server closed");
     process.exit(0);
   });
@@ -211,15 +225,6 @@ const gracefulShutdown = (signal) => {
     process.exit(1);
   }, 10000);
 };
-
-// Start server
-const server = app.listen(port, () => {
-  logger.info("Server started", {
-    port,
-    environment: process.env.NODE_ENV || "development",
-    nodeVersion: process.version,
-  });
-});
 
 // Handle shutdown signals
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
