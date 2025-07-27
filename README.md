@@ -1,88 +1,102 @@
-# My Kubernetes Learning App
+## 📋 Project Overview
 
-A sample Node.js REST API for learning Docker and Kubernetes fundamentals.
+This project follows a structured learning path to master containerization and orchestration:
 
-## Project Structure
+- **Phase 1**: ✅ Foundation Setup - Node.js REST API
+- **Phase 2**: ✅ Docker Mastery - Production Containerization
+- **Phase 3**: 📅 Kubernetes Fundamentals - Orchestration
+- **Phase 4**: 📅 Production Readiness - Monitoring & Security
 
-```
-my-k8s-app/
-├── app/                 # Node.js application
-│   ├── app.js          # Main application file
-│   ├── package.json    # Dependencies
-│   └── tests/          # Test files
-├── docker/              # Dockerfile + scripts
-├── k8s/                # Kubernetes manifests
-├── monitoring/          # Prometheus configs
-└── docs/               # Learning notes
-```
+## ✅ Phase 2: Docker Mastery (COMPLETED)
 
-## Phase 1: Foundation Setup ✅
+### 🎯 What's Built
 
-### API Endpoints
+Production-ready containerization with industry best practices:
 
-- `GET /health` - Health check endpoint
-- `GET /api/users` - Get all users
-- `GET /api/users/:id` - Get user by ID
-- `POST /api/users` - Create new user
-- `DELETE /api/users/:id` - Delete user
+### 🐳 Docker Features
 
-### Features
+| Component                  | Description                                       | Status |
+| -------------------------- | ------------------------------------------------- | ------ |
+| **Multi-stage Dockerfile** | Optimized production builds (~70% size reduction) | ✅     |
+| **Development Container**  | Hot reload environment for development            | ✅     |
+| **Security Hardening**     | Non-root user, minimal Alpine base image          | ✅     |
+| **Health Checks**          | Container monitoring with HTTP endpoints          | ✅     |
+| **Docker Compose**         | Local development stack orchestration             | ✅     |
+| **Resource Limits**        | CPU and memory constraints for stability          | ✅     |
+| **Management Scripts**     | Automated Docker operations                       | ✅     |
 
-- ✅ RESTful API with Express.js
-- ✅ Structured JSON logging
-- ✅ Error handling middleware
-- ✅ Input validation
-- ✅ Graceful shutdown handling
-- ✅ Health check endpoint
-- ✅ Basic test coverage
+### 🔧 Docker Commands
 
-## Quick Start
+| Command                              | Description                 | Usage                 |
+| ------------------------------------ | --------------------------- | --------------------- |
+| `./docker/docker-scripts.sh build`   | Build production image      | Production deployment |
+| `./docker/docker-scripts.sh run`     | Run production container    | Production testing    |
+| `./docker/docker-scripts.sh run-dev` | Development with hot reload | Local development     |
+| `./docker/docker-scripts.sh test`    | Run tests in container      | CI/CD pipeline        |
+| `./docker/docker-scripts.sh scan`    | Security vulnerability scan | Security audit        |
 
-1. Navigate to the app directory:
+### 📊 Performance Metrics
+
+- **Image Size**: ~50-80MB (vs ~200MB single-stage)
+- **Security**: Non-root user, minimal attack surface
+- **Health Checks**: 30s intervals with retry logic
+- **Resource Limits**: CPU 0.5 cores, Memory 512MB
+- **Development**: Hot reload with volume mounting
+
+## 🚀 Quick Start (Updated for Docker)
+
+### Prerequisites
+
+- Node.js 18+
+- Docker Desktop
+- Docker Compose
+
+### Installation & Docker Setup
+
+1. **Clone and setup**:
+
    ```bash
-   cd app
+   git clone https://github.com/YOUR_USERNAME/kubernetes-learning-journey.git
+   cd kubernetes-learning-journey
    ```
 
-2. Install dependencies:
+2. **Build and run with Docker**:
+
    ```bash
-   npm install
+   # Build production image
+   ./docker/docker-scripts.sh build
+
+   # Run production container
+   ./docker/docker-scripts.sh run
    ```
 
-3. Run the application:
+3. **Or use Docker Compose**:
+
    ```bash
-   npm start
+   # Production stack
+   docker-compose up -d
+
+   # Development with hot reload
+   docker-compose --profile dev up -d
    ```
 
-4. Test the application:
+4. **Verify containerized application**:
    ```bash
-   npm test
+   curl http://localhost:3000/health
    ```
 
-## Testing the API
+### Development Workflow
 
-### Health Check
 ```bash
-curl http://localhost:3000/health
+# Development container with hot reload
+./docker/docker-scripts.sh run-dev
+
+# Make changes to app/ files - they'll reload automatically
+# Access at http://localhost:3001
+
+# Run tests in container
+./docker/docker-scripts.sh test
+
+# Check container health and stats
+./docker/docker-scripts.sh stats
 ```
-
-### Get Users
-```bash
-curl http://localhost:3000/api/users
-```
-
-### Create User
-```bash
-curl -X POST http://localhost:3000/api/users \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test User","email":"test@example.com"}'
-```
-
-## Next Steps
-
-- Phase 2: Docker containerization
-- Phase 3: Kubernetes deployment
-- Phase 4: Production readiness
-
-## Learning Notes
-
-Document your learning progress in the `docs/` directory.
